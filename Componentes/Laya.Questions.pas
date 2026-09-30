@@ -1,5 +1,11 @@
 ﻿unit Laya.Questions;
 
+{ LAYA para Delphi
+  Copyright 2026 Carlos Liñán
+  Licensed under the Apache License, Version 2.0.
+  See LICENSE in the project root for details. }
+
+
 { LAYA components - question definitions.
 
   TLayaQuestions holds a collection of typed questions (choice, score, noul)

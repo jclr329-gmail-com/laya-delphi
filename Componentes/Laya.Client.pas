@@ -1,5 +1,11 @@
 ﻿unit Laya.Client;
 
+{ LAYA para Delphi
+  Copyright 2026 Carlos Liñán
+  Licensed under the Apache License, Version 2.0.
+  See LICENSE in the project root for details. }
+
+
 { LAYA components - connection with the LAYA server (FastAPI).
 
   TLayaServer builds the request from a state and a TLayaQuestions, sends it

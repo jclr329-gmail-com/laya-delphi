@@ -1,5 +1,11 @@
 ﻿unit Laya.Training;
 
+{ LAYA para Delphi
+  Copyright 2026 Carlos Liñán
+  Licensed under the Apache License, Version 2.0.
+  See LICENSE in the project root for details. }
+
+
 (* LAYA components - evaluation and training data.
 
   Both components work on top of a TLayaDBAnalyzer and reuse its whole

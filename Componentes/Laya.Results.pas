@@ -1,5 +1,11 @@
 ﻿unit Laya.Results;
 
+{ LAYA para Delphi
+  Copyright 2026 Carlos Liñán
+  Licensed under the Apache License, Version 2.0.
+  See LICENSE in the project root for details. }
+
+
 { LAYA components - results of a prediction.
 
   TLayaResults parses the full response of the LAYA server (/predict) into a

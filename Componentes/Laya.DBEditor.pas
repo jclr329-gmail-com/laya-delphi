@@ -1,5 +1,11 @@
 ﻿unit Laya.DBEditor;
 
+{ LAYA para Delphi
+  Copyright 2026 Carlos Liñán
+  Licensed under the Apache License, Version 2.0.
+  See LICENSE in the project root for details. }
+
+
 (* LAYA components - visual configuration of TLayaDBAnalyzer.
 
   LayaEditDBAnalyzer shows a dialog that reads the fields of DataSetTarget
