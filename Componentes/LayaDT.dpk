@@ -1,0 +1,16 @@
+package LayaDT;
+
+{$DESCRIPTION 'LAYA components - design time'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  designide,
+  LayaRT;
+
+contains
+  Laya.Reg in 'Laya.Reg.pas';
+
+end.

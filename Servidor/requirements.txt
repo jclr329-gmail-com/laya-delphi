@@ -1,0 +1,7 @@
+# Instalar ANTES PyTorch en versión CPU (evita descargar varios GB de CUDA):
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+# y después:
+#   pip install -r requirements.txt
+laya
+fastapi
+uvicorn

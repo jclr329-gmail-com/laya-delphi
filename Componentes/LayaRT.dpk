@@ -1,0 +1,20 @@
+package LayaRT;
+
+{$DESCRIPTION 'LAYA components - runtime'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  dbrtl;
+
+contains
+  Laya.Questions in 'Laya.Questions.pas',
+  Laya.Results in 'Laya.Results.pas',
+  Laya.Client in 'Laya.Client.pas',
+  Laya.DB in 'Laya.DB.pas',
+  Laya.DBEditor in 'Laya.DBEditor.pas',
+  Laya.Training in 'Laya.Training.pas';
+
+end.

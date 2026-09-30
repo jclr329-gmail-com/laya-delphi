@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E4196CB9-1415-4008-A5D0-3D1A906C5AAF}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Componentes\LayaDT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Componentes\LayaRT.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo_Predict\Demo_Predict.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demo_Revisor\Demo_Revisor.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="LayaDT">
+        <MSBuild Projects="Componentes\LayaDT.dproj"/>
+    </Target>
+    <Target Name="LayaDT:Clean">
+        <MSBuild Projects="Componentes\LayaDT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LayaDT:Make">
+        <MSBuild Projects="Componentes\LayaDT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="LayaRT">
+        <MSBuild Projects="Componentes\LayaRT.dproj"/>
+    </Target>
+    <Target Name="LayaRT:Clean">
+        <MSBuild Projects="Componentes\LayaRT.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LayaRT:Make">
+        <MSBuild Projects="Componentes\LayaRT.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Demo_Predict">
+        <MSBuild Projects="Demo_Predict\Demo_Predict.dproj"/>
+    </Target>
+    <Target Name="Demo_Predict:Clean">
+        <MSBuild Projects="Demo_Predict\Demo_Predict.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Demo_Predict:Make">
+        <MSBuild Projects="Demo_Predict\Demo_Predict.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Demo_Revisor">
+        <MSBuild Projects="Demo_Revisor\Demo_Revisor.dproj"/>
+    </Target>
+    <Target Name="Demo_Revisor:Clean">
+        <MSBuild Projects="Demo_Revisor\Demo_Revisor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Demo_Revisor:Make">
+        <MSBuild Projects="Demo_Revisor\Demo_Revisor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="LayaDT;LayaRT;Demo_Predict;Demo_Revisor"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="LayaDT:Clean;LayaRT:Clean;Demo_Predict:Clean;Demo_Revisor:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="LayaDT:Make;LayaRT:Make;Demo_Predict:Make;Demo_Revisor:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

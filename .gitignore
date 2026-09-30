@@ -1,0 +1,41 @@
+# ---------------- Delphi: compilados y archivos del IDE ----------------
+*.dcu
+*.bpl
+*.dcp
+*.bpi
+*.exe
+*.dll
+*.map
+*.drc
+*.rsm
+*.tds
+*.local
+*.identcache
+*.projdata
+*.tvsconfig
+*.dsk
+*.stat
+*.~*
+__history/
+__recovery/
+Win32/
+Win64/
+Debug/
+Release/
+# ---------------- Python ----------------
+__pycache__/
+*.pyc
+venv/
+.venv/
+# ---------------- Modelos (cientos de MB; se regeneran o se descargan) ----------------
+modelos/
+*.safetensors
+*.zip
+# ---------------- Datos generados ----------------
+# CodiEsp se regenera con Python/codiesp_a_sqlite.py (licencia CC BY 4.0)
+codiesp.sdb
+Python/codiesp_extraido/
+Evaluaciones/*.jsonl
+Evaluaciones/*.csv
+Evaluaciones/evaluacion_*.txt
+*.log

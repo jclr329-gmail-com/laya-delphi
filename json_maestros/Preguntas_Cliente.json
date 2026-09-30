@@ -1,0 +1,42 @@
+{
+  "questions": [
+    {
+      "name": "departamento",
+      "kind": "choice",
+      "instructions": "¿Qué departamento debe atender esto?",
+      "acceptThreshold": 0.6,
+      "rejectThreshold": 0.2,
+      "aggregation": "first",
+      "enabled": true,
+      "options": [
+        { "key": "facturacion", "description": "pagos, reembolsos, facturas" },
+        { "key": "soporte", "description": "ayuda técnica y errores" },
+        { "key": "ventas", "description": "nuevas compras" }
+      ]
+    },
+    {
+      "name": "urgencia",
+      "kind": "score",
+      "instructions": "¿Qué urgencia tiene esto?",
+      "acceptThreshold": 0.6,
+      "rejectThreshold": 0.2,
+      "aggregation": "max",
+      "enabled": true,
+      "options": [
+        { "key": "0", "description": "no urgente" },
+        { "key": "1", "description": "pronto" },
+        { "key": "2", "description": "bloqueante" }
+      ]
+    },
+    {
+      "name": "baja",
+      "kind": "noul",
+      "instructions": "¿Amenaza el usuario con darse de baja o cancelar el servicio?",
+      "acceptThreshold": 0.7,
+      "rejectThreshold": 0.3,
+      "aggregation": "max",
+      "enabled": true,
+      "options": []
+    }
+  ]
+}

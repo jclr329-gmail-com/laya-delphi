@@ -1,0 +1,58 @@
+{
+  "questions": [
+    {
+      "name": "diabetes",
+      "kind": "noul",
+      "instructions": "¿El paciente tiene diabetes mellitus (tipo 1, tipo 2 u otro tipo)?",
+      "acceptThreshold": 0.8,
+      "rejectThreshold": 0.2,
+      "aggregation": "max",
+      "enabled": true,
+      "options": []
+    },
+    {
+      "name": "hipertension",
+      "kind": "noul",
+      "instructions": "¿El paciente tiene hipertensión arterial sistémica? La hipertensión pulmonar no cuenta.",
+      "acceptThreshold": 0.8,
+      "rejectThreshold": 0.2,
+      "aggregation": "max",
+      "enabled": true,
+      "options": []
+    },
+    {
+      "name": "cancer",
+      "kind": "noul",
+      "instructions": "¿El paciente tiene o ha tenido un cáncer o tumor maligno?",
+      "acceptThreshold": 0.8,
+      "rejectThreshold": 0.2,
+      "aggregation": "max",
+      "enabled": true,
+      "options": []
+    },
+    {
+      "name": "insuf_renal",
+      "kind": "noul",
+      "instructions": "¿El paciente tiene insuficiencia renal, aguda o crónica?",
+      "acceptThreshold": 0.8,
+      "rejectThreshold": 0.2,
+      "aggregation": "max",
+      "enabled": true,
+      "options": []
+    },
+    {
+      "name": "tabaco",
+      "kind": "choice",
+      "instructions": "¿Cuál es el hábito tabáquico del paciente según el texto?",
+      "acceptThreshold": 0.7,
+      "rejectThreshold": 0.2,
+      "aggregation": "max",
+      "enabled": true,
+      "options": [
+        { "key": "fumador", "description": "fuma actualmente" },
+        { "key": "exfumador", "description": "fumaba pero lo ha dejado" },
+        { "key": "no_consta", "description": "el texto no dice que fume ni que haya fumado" }
+      ]
+    }
+  ]
+}
