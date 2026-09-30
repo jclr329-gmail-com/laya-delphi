@@ -11,9 +11,9 @@ urgencia de una incidencia...
 Este repositorio incluye:
 
 * un **servidor Python** (FastAPI) que carga el modelo y lo expone por HTTP en el propio equipo;
-* **siete componentes Delphi** que hablan con el servidor, procesan tablas de base de datos,
+* **seis componentes Delphi** que hablan con el servidor, procesan tablas de base de datos,
   miden la calidad del modelo y generan datos de entrenamiento;
-* dos **aplicaciones de demostración**;
+* tres **aplicaciones de demostración**;
 * un **notebook de Kaggle** para afinar el modelo con datos propios en una GPU gratuita;
 * un caso completo con casos clínicos reales publicados (**CodiEsp**): evaluación del modelo
   base, entrenamiento y evaluación del modelo afinado.
@@ -28,7 +28,7 @@ Desarrollado con **Delphi 12 Community Edition** y **Python 3.11** en Windows.
  Aplicación Delphi                         Servidor local (Python)
 ┌──────────────────────────────┐   HTTP    ┌────────────────────────────┐
 │ TLayaServer ─────────────────┼──────────►│ servidor.py (FastAPI)      │
-│   │  TLayaQuestions          │  JSON     │   /salud                   │
+│   │  TLayaQuestions          │  JSON     │   /salud    /preguntas     │
 │   │  TLayaResults            │◄──────────┤   /predict  ──► modelo     │
 │   │                          │           │                  LAYA      │
 │ TLayaDBAnalyzer ── TDataSet  │           └────────────────────────────┘
@@ -42,6 +42,7 @@ Desarrollado con **Delphi 12 Community Edition** y **Python 3.11** en Windows.
 | Carpeta | Contenido |
 |---|---|
 | `Componentes/` | Paquetes `LayaRT` (ejecución) y `LayaDT` (diseño) con las unidades `Laya.*` |
+| `Demo_General/` | Cliente genérico: se conecta a cualquier servidor, recibe sus preguntas y analiza textos |
 | `Demo_Predict/` | Consultas sueltas y análisis de la tabla de clientes |
 | `Demo_Revisor/` | Evaluación y exportación con la base de datos CodiEsp |
 | `Servidor/` | `servidor.py`, `log_config.json`, `requirements.txt` y los `.bat` de arranque |
@@ -84,6 +85,12 @@ El servidor escucha solo en `127.0.0.1`: no es accesible desde otros equipos.
 | `LAYA_MODELO_HUB` | Modelo de Hugging Face (por defecto `convaiinnovations/laya-multilingual`) |
 | `LAYA_MODELO_NOMBRE` | Nombre que devuelve `/salud` y que se guarda en `FieldModel` |
 | `LAYA_OFFLINE` | `1` = no consultar Hugging Face |
+| `LAYA_PREGUNTAS` | JSON con las preguntas de ese modelo, que sirve `/preguntas`. Ruta relativa a `Servidor/` |
+
+Un modelo afinado se entrena con unos nombres de pregunta e instrucciones concretos, así que sus
+preguntas forman parte del modelo. Por eso cada `.bat` indica en `LAYA_PREGUNTAS` el archivo de
+`json_maestros` que corresponde a su modelo, y los programas pueden pedírselo al servidor en lugar
+de llevarlo incorporado. El archivo se lee en cada petición: si lo editas, no hace falta reiniciar.
 
 ## 2. Instalar los componentes
 
@@ -100,17 +107,18 @@ Aparece la pestaña **LAYA** en la paleta. `LayaRT` requiere los paquetes `rtl`,
 ### TLayaServer
 Conexión con el servidor.
 
-* **Propiedades:** `BaseURL`, `PredictPath`, `HealthPath`, `ConnectionTimeout`, `ResponseTimeout`,
+* **Propiedades:** `BaseURL`, `PredictPath`, `HealthPath`, `QuestionsPath`, `ConnectionTimeout`, `ResponseTimeout`,
   `StateKey`, `Questions`, `Results`.
 * **Solo lectura:** `LastStatusCode`, `LastRequestBody`, `LastResponseBody`, `LastElapsedMs`,
   `LastError`, `ModelName`, `Busy`.
-* **Métodos:** `CheckHealth`, `Predict` y `PredictAsync` (sin texto, lo leen de `Questions.InTXT`;
+* **Métodos:** `CheckHealth`, `LoadQuestions` (carga en `Questions` las preguntas del servidor),
+  `Predict` y `PredictAsync` (sin texto, lo leen de `Questions.InTXT`;
   con texto; o con componentes explícitos), `PredictState` para estados con varios campos.
 * **Eventos:** `OnBeforeRequest`, `OnAfterRequest`, `OnError`, `OnLog`.
 * Los errores de programación lanzan `ELayaError`; los de red o servidor no: `Predict` devuelve
   `False`, rellena `LastError` y dispara `OnError`. La versión asíncrona ejecuta resultados y
   eventos en el hilo principal.
-* En diseño: clic derecho → *Probar conexión*.
+* En diseño: clic derecho → *Probar conexión* y *Cargar preguntas del servidor*.
 
 ### TLayaQuestions
 Colección de preguntas editable en el Inspector. Tipos: `qkChoice` (elegir una opción), `qkScore`
@@ -119,7 +127,8 @@ Colección de preguntas editable en el Inspector. Tipos: `qkChoice` (elegir una 
 * Por pregunta: `Name`, `Kind`, `Instructions`, `Options`, `AcceptThreshold`, `RejectThreshold`,
   `Aggregation`, `Enabled`.
 * `InTXT`: memo con el texto a analizar.
-* Métodos `AddChoice`, `AddScore`, `AddNoul`, `Validate`, `SaveToFile`, `LoadFromFile`.
+* Métodos `AddChoice`, `AddScore`, `AddNoul`, `Validate`, `SaveToFile`, `LoadFromFile`,
+  `AsText` (lista legible) y `FormattedJSON`.
 * En diseño: *Editar preguntas*, *Cargar desde archivo*, *Guardar en archivo*.
 
 ### TLayaResults
@@ -173,6 +182,17 @@ Exporta los registros revisados a **JSON Lines** en el formato del conjunto
 LayaQuestions1.AddNoul('diabetes', '¿El paciente tiene diabetes mellitus?');
 if LayaServer1.Predict(Memo1.Text) then
   ShowMessage(LayaResults1.ByName('diabetes').AnswerCaption);
+```
+
+Sin preguntas fijas en el programa, tomándolas del servidor (así funciona `Demo_General`):
+
+```pascal
+if LayaServer1.CheckHealth and LayaServer1.LoadQuestions then
+  Memo2.Text := LayaQuestions1.AsText;
+
+// después, con el texto en Memo1:
+if LayaServer1.Predict(Memo1.Text) then
+  Memo2.Text := LayaResults1.AsText;
 ```
 
 Para una tabla: asigna `Server`, `DataSetTarget` y las preguntas a un `TLayaDBAnalyzer`, haz doble
@@ -243,7 +263,7 @@ de salud. Todo el proceso se ejecuta en local, pero eso no sustituye a esa autor
 ## Licencia
 
 Los componentes Delphi, las aplicaciones de demostración, el servidor, los scripts y el notebook
-de este repositorio son © 2026 Juan Carlos y se distribuyen bajo la
+de este repositorio son © 2026 Carlos Liñán y se distribuyen bajo la
 **licencia Apache 2.0** (ver [LICENSE](LICENSE)).
 
 Este proyecto usa materiales de terceros con sus propias licencias:

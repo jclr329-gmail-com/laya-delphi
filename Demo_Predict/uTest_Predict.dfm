@@ -469,6 +469,7 @@ object FTestPredict: TFTestPredict
     BaseURL = 'http://127.0.0.1:8000'
     PredictPath = '/predict'
     HealthPath = '/salud'
+    QuestionsPath = '/preguntas'
     StateKey = 'text'
     Questions = LayaQuestions1
     Results = LayaResults1

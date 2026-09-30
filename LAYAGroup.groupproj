@@ -15,6 +15,9 @@
         <Projects Include="Demo_Revisor\Demo_Revisor.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Demo_General\Demo_General.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +62,23 @@
     <Target Name="Demo_Revisor:Make">
         <MSBuild Projects="Demo_Revisor\Demo_Revisor.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Demo_General">
+        <MSBuild Projects="Demo_General\Demo_General.dproj"/>
+    </Target>
+    <Target Name="Demo_General:Clean">
+        <MSBuild Projects="Demo_General\Demo_General.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Demo_General:Make">
+        <MSBuild Projects="Demo_General\Demo_General.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="LayaDT;LayaRT;Demo_Predict;Demo_Revisor"/>
+        <CallTarget Targets="LayaDT;LayaRT;Demo_Predict;Demo_Revisor;Demo_General"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="LayaDT:Clean;LayaRT:Clean;Demo_Predict:Clean;Demo_Revisor:Clean"/>
+        <CallTarget Targets="LayaDT:Clean;LayaRT:Clean;Demo_Predict:Clean;Demo_Revisor:Clean;Demo_General:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="LayaDT:Make;LayaRT:Make;Demo_Predict:Make;Demo_Revisor:Make"/>
+        <CallTarget Targets="LayaDT:Make;LayaRT:Make;Demo_Predict:Make;Demo_Revisor:Make;Demo_General:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

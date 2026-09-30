@@ -26,8 +26,15 @@
     - Server or network errors do not raise: Predict returns False, LastError
       is set and OnError is fired.
 
+  Questions from the server:
+    LoadQuestions asks QuestionsPath (GET /preguntas) for the questions that
+    belong to the loaded model and fills Questions (same JSON format as
+    TLayaQuestions.LoadFromFile). A fine-tuned model is trained with specific
+    question names and instructions, so the server is the best place to keep
+    them. Returns False (LastError, OnError) if the server has none configured.
+
   Threads:
-    - Predict / PredictState / CheckHealth are synchronous. Events run in the
+    - Predict / PredictState / CheckHealth / LoadQuestions are synchronous. Events run in the
       calling thread.
     - PredictAsync / PredictStateAsync send the request in a background task;
       results, events and AOnDone run in the main thread. }
@@ -59,6 +66,7 @@ type
     FBaseURL: string;
     FPredictPath: string;
     FHealthPath: string;
+    FQuestionsPath: string;
     FConnectionTimeout: Integer;
     FResponseTimeout: Integer;
     FStateKey: string;
@@ -97,6 +105,11 @@ type
     { GET HealthPath. Fills ModelName. }
     function CheckHealth: Boolean;
 
+    { GET QuestionsPath. Replaces the questions of Questions (or AQuestions)
+      with the ones configured in the server for the loaded model. }
+    function LoadQuestions: Boolean; overload;
+    function LoadQuestions(AQuestions: TLayaQuestions): Boolean; overload;
+
     function StateFromText(const AText: string): string;
     class function StateFromFields(const ANames, AValues: array of string): string;
     function BuildRequestBody(const AStateJSON: string; AQuestions: TLayaQuestions): string;
@@ -133,6 +146,7 @@ type
     property BaseURL: string read FBaseURL write FBaseURL;
     property PredictPath: string read FPredictPath write FPredictPath;
     property HealthPath: string read FHealthPath write FHealthPath;
+    property QuestionsPath: string read FQuestionsPath write FQuestionsPath;
     property ConnectionTimeout: Integer read FConnectionTimeout write FConnectionTimeout default 5000;
     property ResponseTimeout: Integer read FResponseTimeout write FResponseTimeout default 120000;
     property StateKey: string read FStateKey write FStateKey;
@@ -156,6 +170,9 @@ resourcestring
   SHTTPError = 'El servidor LAYA respondió HTTP %d: %s';
   SNoInTXT = 'Para usar Predict sin texto, asigna Questions y su propiedad InTXT.';
   SParseError = 'No se pudo interpretar la respuesta del servidor LAYA: %s';
+  SNoServerQuestions = 'El servidor LAYA no tiene preguntas configuradas para este modelo ' +
+    '(variable LAYA_PREGUNTAS en el .bat de arranque).';
+  SInvalidServerQuestions = 'Las preguntas recibidas del servidor no son válidas: %s';
 
 type
   TLayaAlive = class(TInterfacedObject, ILayaAlive)
@@ -241,6 +258,7 @@ begin
   FBaseURL := 'http://127.0.0.1:8000';
   FPredictPath := '/predict';
   FHealthPath := '/salud';
+  FQuestionsPath := '/preguntas';
   FConnectionTimeout := 5000;
   FResponseTimeout := 120000;
   FStateKey := 'text';
@@ -463,6 +481,59 @@ begin
     V.Free;
   end;
   Log('Servidor OK. Modelo: ' + FModelName);
+  Result := True;
+end;
+
+function TLayaServer.LoadQuestions: Boolean;
+begin
+  Result := LoadQuestions(FQuestions);
+end;
+
+function TLayaServer.LoadQuestions(AQuestions: TLayaQuestions): Boolean;
+var
+  R: THTTPResult;
+begin
+  Result := False;
+  if FBusy then
+    raise ELayaError.Create(SServerBusy);
+  if AQuestions = nil then
+    raise ELayaError.Create(SNoQuestionsComponent);
+
+  FLastRequestBody := '';
+  Log('GET ' + BuildURL(FQuestionsPath));
+  R := DoHTTP('GET', BuildURL(FQuestionsPath), '', FConnectionTimeout, FResponseTimeout);
+  FLastStatusCode := R.StatusCode;
+  FLastResponseBody := R.Body;
+  FLastElapsedMs := R.ElapsedMs;
+  FLastError := '';
+
+  if R.Error <> '' then
+  begin
+    SetError(Format(SConnectionError, [FBaseURL, R.Error]));
+    Exit;
+  end;
+  if R.StatusCode = 404 then
+  begin
+    SetError(SNoServerQuestions);
+    Exit;
+  end;
+  if R.StatusCode <> 200 then
+  begin
+    SetError(Format(SHTTPError, [R.StatusCode, R.Body]));
+    Exit;
+  end;
+
+  try
+    AQuestions.DefinitionsFromJSON(R.Body);
+    AQuestions.Validate;
+  except
+    on E: Exception do
+    begin
+      SetError(Format(SInvalidServerQuestions, [E.Message]));
+      Exit;
+    end;
+  end;
+  Log(Format('Preguntas cargadas del servidor: %d', [AQuestions.Count]));
   Result := True;
 end;
 

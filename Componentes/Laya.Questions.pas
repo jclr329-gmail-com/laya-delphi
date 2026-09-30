@@ -152,6 +152,11 @@ type
     procedure SaveToFile(const AFileName: string);
     procedure LoadFromFile(const AFileName: string);
 
+    { Readable list of the questions: name, kind, instructions and options }
+    function AsText: string;
+    { DefinitionsToJSON indented, for display }
+    function FormattedJSON: string;
+
     property Count: Integer read GetCount;
     property Questions[Index: Integer]: TLayaQuestion read GetQuestion; default;
   published
@@ -605,6 +610,50 @@ begin
     Result := Root.Format(2);
   finally
     Root.Free;
+  end;
+end;
+
+function TLayaQuestions.AsText: string;
+var
+  SL: TStringList;
+  I, J: Integer;
+  Q: TLayaQuestion;
+begin
+  SL := TStringList.Create;
+  try
+    SL.Add(Format('Preguntas: %d', [FItems.Count]));
+    for I := 0 to FItems.Count - 1 do
+    begin
+      Q := FItems[I];
+      SL.Add('');
+      if Q.Enabled then
+        SL.Add(Format('%s  (%s)', [Q.Name, LAYA_KIND_NAMES[Q.Kind]]))
+      else
+        SL.Add(Format('%s  (%s, desactivada)', [Q.Name, LAYA_KIND_NAMES[Q.Kind]]));
+      SL.Add('  ' + Q.Instructions);
+      for J := 0 to Q.Options.Count - 1 do
+        if Q.Options[J].Description <> '' then
+          SL.Add(Format('    · %s: %s', [Q.Options[J].Key, Q.Options[J].Description]))
+        else
+          SL.Add('    · ' + Q.Options[J].Key);
+    end;
+    Result := SL.Text;
+  finally
+    SL.Free;
+  end;
+end;
+
+function TLayaQuestions.FormattedJSON: string;
+var
+  V: TJSONValue;
+begin
+  Result := DefinitionsToJSON;
+  V := TJSONObject.ParseJSONValue(Result);
+  try
+    if V <> nil then
+      Result := V.Format(2);
+  finally
+    V.Free;
   end;
 end;
 

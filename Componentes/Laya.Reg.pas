@@ -16,7 +16,7 @@ procedure Register;
 implementation
 
 uses
-  System.Classes, System.SysUtils, Data.DB, Vcl.Dialogs,
+  System.Classes, System.SysUtils, System.UITypes, Data.DB, Vcl.Dialogs,
   DesignIntf, DesignEditors, ColnEdit,
   Laya.Questions, Laya.Results, Laya.Client, Laya.DB, Laya.DBEditor, Laya.Training;
 
@@ -209,12 +209,17 @@ end;
 
 function TLayaServerEditor.GetVerbCount: Integer;
 begin
-  Result := 1;
+  Result := 2;
 end;
 
 function TLayaServerEditor.GetVerb(Index: Integer): string;
 begin
-  Result := 'Probar conexión...';
+  case Index of
+    0: Result := 'Probar conexión...';
+    1: Result := 'Cargar preguntas del servidor...';
+  else
+    Result := '';
+  end;
 end;
 
 procedure TLayaServerEditor.ExecuteVerb(Index: Integer);
@@ -222,12 +227,37 @@ var
   S: TLayaServer;
 begin
   S := Component as TLayaServer;
-  if S.CheckHealth then
-    ShowMessage(Format('Conexión correcta con %s' + sLineBreak +
-      'Modelo: %s' + sLineBreak + 'Tiempo: %d ms',
-      [S.BaseURL, S.ModelName, S.LastElapsedMs]))
-  else
-    ShowMessage('No se pudo conectar:' + sLineBreak + sLineBreak + S.LastError);
+  case Index of
+    0:
+      if S.CheckHealth then
+        ShowMessage(Format('Conexión correcta con %s' + sLineBreak +
+          'Modelo: %s' + sLineBreak + 'Tiempo: %d ms',
+          [S.BaseURL, S.ModelName, S.LastElapsedMs]))
+      else
+        ShowMessage('No se pudo conectar:' + sLineBreak + sLineBreak + S.LastError);
+    1:
+      begin
+        if S.Questions = nil then
+        begin
+          ShowMessage('Asigna primero la propiedad Questions del servidor.');
+          Exit;
+        end;
+        if (S.Questions.Count > 0) and
+           (MessageDlg(Format('%s tiene %d preguntas. ¿Sustituirlas por las del servidor?',
+             [S.Questions.Name, S.Questions.Count]),
+             mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
+          Exit;
+        if S.LoadQuestions then
+        begin
+          Designer.Modified;
+          ShowMessage(Format('Cargadas %d preguntas en %s.',
+            [S.Questions.Count, S.Questions.Name]));
+        end
+        else
+          ShowMessage('No se pudieron cargar las preguntas:' + sLineBreak + sLineBreak +
+            S.LastError);
+      end;
+  end;
 end;
 
 { TLayaQuestionsEditor }
