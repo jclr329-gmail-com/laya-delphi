@@ -240,7 +240,16 @@ revisarse, no datos clínicos. Antes de usarlo con informes reales hay que valid
 revisada de esos mismos informes y contar con la autorización correspondiente para tratar datos
 de salud. Todo el proceso se ejecuta en local, pero eso no sustituye a esa autorización.
 
-## Licencias
+## Licencia
 
-Consulta [NOTICE.md](NOTICE.md) para las licencias de LAYA (Apache 2.0) y CodiEsp (CC BY 4.0).
+Los componentes Delphi, las aplicaciones de demostración, el servidor, los scripts y el notebook
+de este repositorio son © 2026 Juan Carlos y se distribuyen bajo la
+**licencia Apache 2.0** (ver [LICENSE](LICENSE)).
+
+Este proyecto usa materiales de terceros con sus propias licencias:
+
+* **LAYA**, de Convai Innovations: Apache 2.0.
+* **CodiEsp**, del Barcelona Supercomputing Center: CC BY 4.0.
+
+Los detalles y la cita obligatoria de CodiEsp están en [NOTICE.md](NOTICE.md).
 Los modelos entrenados y el corpus CodiEsp no se incluyen en el repositorio.
